@@ -4,28 +4,49 @@
 
 Slides are available here - [josefkarasek.github.io/docker101](https://josefkarasek.github.io/docker101/) (source files can be found in the gh-pages branch)
 
-Feedback form for the 5. session - [schiffer.typeform.com/to/cOl04R](https://schiffer.typeform.com/to/cOl04R)
-
 PDF version and archive of the html slides can be found here - [github.com/pschiffe/docker101/releases](https://github.com/pschiffe/docker101/releases)
 
-## Installation
-This tutorial guides you through installation of Docker. However, it does not second the official documentation. If you happen to miss some information, you'll most likely find it [there](http://docs.docker.com/).
+## Docker Installation
+This short tutorial guides you through the installation of Docker. However, it does not second the official documentation. If you happen to miss some information, you'll most likely find it [there](https://docs.docker.com/).
 
-### Linux Users
-Docker runs on recent Linux machines natively, so you only need to install Docker package and start docker daemon. A good practice is to install package from your distro repository, just search for Docker package.  Example installation for Fedora:
+### Fedora / CentOS / RHEL
+The Docker service needs some storage considerations. Ideal case is, when your workstation is using LVM for storage, and you have a free space (20GB or more is recommended) in a volume group. Spare partition or disk is also fine. If not, no worries. Docker will still work just fine, with slightly degraded performance, what is perfectly fine for development and testing purposes.
+
+To install Docker on Fedora, run:
 ```
 sudo dnf install docker
 ```
-Start docker engine:
+
+On CentOS and RHEL, run:
+```
+sudo yum install docker
+```
+
+If you have a free space in your volume group, and you can use it for the Docker storage, modify `/etc/sysconfig/docker-storage-setup` file. For example:
+```
+VG=my-vol-group
+DATA_SIZE=20GB
+```
+
+If you have a spare disk or partition, you can use this example:
+```
+DEVS=/dev/vdb1
+VG=docker-vol
+DATA_SIZE=95%VG
+```
+
+If you haven't, just leave the `/etc/sysconfig/docker-storage-setup` file as it is.
+
+Now just start the Docker service and (optionally) enable it at the boot time:
 ```
 sudo systemctl start docker
+sudo systemctl enable docker
 ```
-At last create a docker group and add your user to that group, so you don't have to type sudo every time you use docker client.
+
+When running `docker` commands, don't forget to use `sudo`, otherwise you will see something like:
 ```
-sudo groupadd docker
-sudo gpasswd -a $(whoami) docker
+Cannot connect to the Docker daemon. Is the docker daemon running on this host?
 ```
-If you wonder why this is necessary Dan Walsh has written an [article](http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-docker-in-centos-fedora-or-rhel/), where he goes deep into the security settings of Fedora and RHEL.
 
 #### Ubuntu
 A section of [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-dockerise-and-deploy-multiple-wordpress-applications-on-ubuntu) can be helpful while installing Docker on Ubuntu.
